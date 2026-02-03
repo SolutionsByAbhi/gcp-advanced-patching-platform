@@ -1,0 +1,5 @@
+gcp_patching_phase:  "patch"
+
+patch_log_dir:  "/var/log/gcp-patching"
+patch_report_dir:  "./reports/gcp"
+reboot_allowed:  true
