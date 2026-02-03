@@ -1,0 +1,13 @@
+{
+   "host":  "{{  inventory_hostname  }}",
+    "cloud":  "gcp",
+    "zone":  "{{  ansible_gce_zone  |  default('unknown')  }}",
+    "date":  "{{ ansible_date_time.date  }}",
+    "time":  "{{  ansible_date_time.time  }}",
+    "kernel_version":  "{{  new_kernel.stdout  |  default('unknown')  }}",
+    "os_family":  "{{  ansible_os_family  }}",
+   "reboot_allowed":  "{{  reboot_allowed  }}",
+    "services":  {
+        "sshd":  "{{  ansible_facts.services['ssh.service'].state  |  default('unknown')  }}"
+   }
+}
