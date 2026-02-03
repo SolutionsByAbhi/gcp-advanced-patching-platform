@@ -1,0 +1,21 @@
+---
+-  name:  Get  new  kernel  version
+   ansible.builtin.shell:  uname  -r
+    register:  new_kernel
+    changed_when:  false
+
+-  name:  Check  critical  services  (example:  sshd)
+   ansible.builtin.service_facts:
+
+-  name:  Ensure  sshd  is  running
+    ansible.builtin.assert:
+        that:
+           -  ansible_facts.services['ssh.service'].state  ==  'running'
+        fail_msg:  "sshd  is  not  running  after  patching  on  {{  inventory_hostname  }}"
+       success_msg:  "sshd  is  running"
+
+-  name:  Generate  GCP  patch  report
+    ansible.builtin.template:
+        src:  patch_report.j2
+       dest:  "{{  patch_report_dir  }}/gcp_patch_{{  inventory_hostname  }}.json"
+        mode:  "0644"
