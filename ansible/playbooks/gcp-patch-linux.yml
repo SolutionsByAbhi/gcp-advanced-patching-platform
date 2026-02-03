@@ -1,0 +1,18 @@
+---
+-  name:  GCP  Linux  patch  verification  around  OS  Config  jobs
+    hosts:  gcp_linux
+   gather_facts:  yes
+    become:  yes
+
+    roles:
+        -  role:  gcp_linux_patching
+           gcp_patching_phase:  "patch"
+            tags:  ["patch"]
+
+        -  role:  gcp_linux_patching
+           gcp_patching_phase:  "reboot"
+            tags:  ["reboot"]
+
+        -  role:  gcp_linux_patching
+           gcp_patching_phase:  "verify"
+            tags:  ["verify"]
