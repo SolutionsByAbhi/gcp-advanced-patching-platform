@@ -1,0 +1,13 @@
+---
+#  Note:  actual  patching  is  done  by  OS Config;  here  we  just  log  and  validate.
+
+-  name:  Log  that  OS  Config  patch  job  is  expected  to  run
+   ansible.builtin.lineinfile:
+        path:  "{{  patch_log_dir  }}/patch_{{  inventory_hostname  }}.log"
+        create:  yes
+        line: "OS  Config  patch  job  window  started  at  {{  ansible_date_time.date  }}  {{  ansible_date_time.time  }}"
+
+-  name:  Wait  for  OS  Config  patch  window to  complete  (placeholder)
+    ansible.builtin.pause:
+        minutes:  5
+    when:  false    #  adjust  if  you  want Ansible  to  wait
