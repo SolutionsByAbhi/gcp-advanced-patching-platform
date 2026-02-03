@@ -1,0 +1,33 @@
+name:  GCP  Patching  Checks
+
+on:
+   schedule:
+        -  cron:  "0  1  *  *  0"    #  Every  Sunday  01:00
+    workflow_dispatch:
+
+jobs:
+    pre-and-post-checks:
+        runs-on:  ubuntu-latest
+        steps:
+           -  uses:  actions/checkout@v4
+            -  name:  Install  Ansible  &  GCP  collection
+               run:  |
+                    pip  install  ansible
+                   ansible-galaxy  collection  install  google.cloud
+            -  name:  Configure  GCP  credentials
+               env:
+                    GCP_SERVICE_ACCOUNT_KEY:  ${{  secrets.GCP_SERVICE_ACCOUNT_KEY  }}
+               run:  |
+                    echo  "$GCP_SERVICE_ACCOUNT_KEY"  > gcp-key.json
+                    export  GOOGLE_APPLICATION_CREDENTIALS=$PWD/gcp-key.json
+            -  name:  Run pre-checks
+                working-directory:  ansible
+                run:  ansible-playbook  -i inventories/gcp_compute.yml  playbooks/gcp-precheck.yml
+            -  name:  Run  post-checks
+                working-directory:  ansible
+               run:  ansible-playbook  -i  inventories/gcp_compute.yml  playbooks/gcp-postcheck.yml
+            -  name:  Upload reports
+                uses:  actions/upload-artifact@v4
+                with:
+                   name:  gcp-patch-reports
+                    path:  ansible/reports/
