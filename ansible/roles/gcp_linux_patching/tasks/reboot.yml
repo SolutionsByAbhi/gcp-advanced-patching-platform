@@ -1,0 +1,19 @@
+---
+#  Reboot  is  normally  handled  by  OS  Config;  this  is  a  safety net.
+
+-  name:  Check  if  reboot  is  required  (Debian/Ubuntu)
+    ansible.builtin.stat:
+        path:  /var/run/reboot-required
+    register: reboot_required
+    when:  ansible_os_family  ==  "Debian"
+
+-  name:  Reboot  if  allowed  and  required
+    ansible.builtin.reboot:
+       msg:  "Reboot  initiated  by  Ansible  (GCP  patching  safety  net)"
+        connect_timeout:  5
+        reboot_timeout:  600
+       pre_reboot_delay:  10
+        post_reboot_delay:  30
+    when:
+        -  reboot_allowed  |  bool
+       -  reboot_required.stat.exists  |  default(false)
