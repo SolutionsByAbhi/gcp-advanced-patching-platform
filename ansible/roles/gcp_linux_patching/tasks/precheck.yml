@@ -1,0 +1,37 @@
+---
+-  name:  Ensure  patch  log  directory  exists
+    ansible.builtin.file:
+        path:  "{{  patch_log_dir  }}"
+       state:  directory
+        mode:  "0755"
+
+-  name:  Check  disk  space
+    ansible.builtin.shell:  df  -h /
+    register:  disk_space
+    changed_when:  false
+
+-  name:  Get  current  kernel  version
+    ansible.builtin.shell:  uname  -r
+   register:  current_kernel
+    changed_when:  false
+
+-  name:  Check  OS  Config  agent  status
+    ansible.builtin.service_facts:
+
+-  name:  Assert OS  Config  agent  is  running
+    ansible.builtin.assert:
+        that:
+            -  ansible_facts.services['google-osconfig-agent.service'].state  == 'running'
+        fail_msg:  "OS  Config  agent  is  not  running  on  {{  inventory_hostname  }}"
+        success_msg:  "OS Config  agent  is  running"
+
+-  name:  Write  precheck  summary
+    ansible.builtin.copy:
+        dest:  "{{  patch_log_dir  }}/precheck_{{  inventory_hostname }}.log"
+        mode:  "0644"
+        content:  |
+            Host:  {{  inventory_hostname }}
+            Date:  {{  ansible_date_time.date  }}  {{  ansible_date_time.time  }}
+            Disk:  {{ disk_space.stdout_lines  |  join('  ')  }}
+            Kernel:  {{  current_kernel.stdout  }}
+            OS Config  agent:  {{  ansible_facts.services['google-osconfig-agent.service'].state  |  default('unknown')  }}
