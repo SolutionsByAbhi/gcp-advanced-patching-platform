@@ -1,0 +1,10 @@
+---
+-  name:  GCP  pre-patch  checks
+    hosts:  gcp_linux
+    gather_facts:  yes
+    become:  yes
+
+    roles:
+       -  role:  gcp_linux_patching
+            gcp_patching_phase:  "precheck"
+            tags:  ["precheck"]
